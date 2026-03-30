@@ -5,8 +5,42 @@ import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { Mail, Lock, } from "lucide-react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
+import type LoginData from "@/models/LoginData";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const Login = () => {
+
+  const [data, setData] = useState<LoginData>({
+    email: "",
+    password: ""
+  })
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(data);
+      setData((value)=> ({
+        ...value,
+        [event.target.name]: event.target.value
+      }));
+  }
+
+  const handleFormSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      console.log(data);
+
+      if(data.email == ''){
+        toast.error("Email is Required");
+        return;
+      }
+
+      if(data.password == ''){
+        toast.error("Password is Required");
+        return;
+      }
+
+      
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4 py-10">
       <motion.div
@@ -49,6 +83,8 @@ const Login = () => {
                     placeholder="you@example.com"
                     className="pl-10"
                     name="email"
+                    value={data.email}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
@@ -64,6 +100,8 @@ const Login = () => {
                     placeholder="••••••••"
                     className="pl-10"
                     name="password"
+                    value={data.password}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
