@@ -28,3 +28,9 @@ export const getCurrentUser = async (emailId: string | undefined) => {
     const response = await apiClient.get<User>(`/users/email/${emailId}`);
     return response.data
 }
+
+// refresh token
+export const refreshToken = async () =>{
+    const response = await apiClient.post<LoginResponseData>(`/auth/refresh`);
+    return response.data;
+}
