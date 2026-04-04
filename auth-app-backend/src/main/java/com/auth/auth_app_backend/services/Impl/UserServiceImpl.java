@@ -5,11 +5,14 @@ import com.auth.auth_app_backend.entity.Provider;
 import com.auth.auth_app_backend.entity.User;
 import com.auth.auth_app_backend.exceptions.ResourceNotFoundException;
 import com.auth.auth_app_backend.helpers.UserHelper;
+import com.auth.auth_app_backend.repository.RefreshTokenRepository;
 import com.auth.auth_app_backend.repository.UserRepository;
 import com.auth.auth_app_backend.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -20,7 +23,9 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final RefreshTokenRepository refreshTokenRepository;
 
+//    @CachePut(value = "users", key = "result.id")
     @Override
     @Transactional
     public UserDto createUser(UserDto userDto) {
@@ -38,8 +43,10 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(savedUser, UserDto.class);
     }
 
+//    @Cacheable(value = "users", key = "#email")
     @Override
     public UserDto getUserByEmail(String email){
+//        System.out.println("Fetching data from database");
         User user = userRepository
                 .findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with the given mail id"));
@@ -70,11 +77,14 @@ public class UserServiceImpl implements UserService {
         User user = userRepository
                 .findById(uId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not Found with the given id"));
+        refreshTokenRepository.deleteByUserId(uId);
         userRepository.delete(user);
     }
 
+    @Cacheable(value = "users", key = "#userId")
     @Override
     public UserDto getUserById(String userId){
+        System.out.println("Fetching from DB only for testing purpose");
         User user = userRepository
                 .findById(UserHelper.parseUUID(userId)).orElseThrow(() -> new ResourceNotFoundException("User not Found with the given id"));
         return modelMapper.map(user, UserDto.class);
