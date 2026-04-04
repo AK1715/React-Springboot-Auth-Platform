@@ -4,6 +4,7 @@ import com.auth.auth_app_backend.entity.Provider;
 import com.auth.auth_app_backend.entity.Role;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserDto {
+public class UserDto implements Serializable {
 
     private UUID id;
     private String email;
